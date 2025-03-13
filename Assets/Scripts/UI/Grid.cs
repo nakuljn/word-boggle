@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,11 +5,16 @@ using UnityEngine.UI;
 using WordBoggle.Utils;
 using Random = UnityEngine.Random;
 
-
 namespace WordBoggle
 {
+    /// <summary>
+    /// Main class for holding cell data and initialising Cells based on game mode
+    /// This can either initialise cells based on level data or constant grid size 
+    /// </summary>
     public class Grid : MonoBehaviour
     { 
+        #region Fields
+        
         [SerializeField] private Cell cellPrefab;
         [SerializeField] private SpawnCell spawnCellPrefab;
         [SerializeField] private Transform cellParent;
@@ -19,6 +23,7 @@ namespace WordBoggle
         private Dictionary<Vector2Int, Cell> _cellsDictionary;
         private Vector2Int _gridSize;
 
+        #endregion
         #region Unity Methods
         private void OnEnable()
         {
@@ -51,7 +56,6 @@ namespace WordBoggle
                     _cellsDictionary[cellCoord] = cell;
                 }
             }
-
             IdentifyNeighbours();
         }
 
@@ -64,6 +68,7 @@ namespace WordBoggle
             }
             _cellsDictionary.Clear();
         }
+        
         //Initialising grid for endless mode
         public void InitialiseEmptyCells(int x, int y)
         {
@@ -132,30 +137,9 @@ namespace WordBoggle
             spawnCell.SetBottomNeighbour(bottomCell);
 
         }
-
-        public void FillRemainingCellsRandomly(List<Cell> remaniningCells)
-        {
-            string letters = "AFDVBKDLRUNEBENT";
-            int idx = 0;
-            for (int i = 0; i < Constants.EndlessModeGridSizeX; i++)
-            {
-                for (int j = 0; j < Constants.EndlessModeGridSizeY; j++)
-                {
-                    var cell = GetCell(new Vector2Int(i, j));
-                    if (cell != null && remaniningCells.Contains(cell))
-                    {
-                        remaniningCells.Add(cell);
-                        // var randomLetterIdx = Random.Range(0, 26);
-                        // char randomLetter  = (char)('A' + randomLetterIdx);
-                        var gridTile = new GridTile {letter = letters[idx].ToString(), tileType = 0};
-                        cell.Initialise(gridTile, new Vector2Int(i, j));
-                        idx++;
-                    }
-                  
-                }
-            }
-        }
-
+        
+        // For endless mode, this method places a valid word on the grid starting from 
+        // random position and going into random direction.
         public List<Cell> PlaceExistingWord(string randomWord)
         {
             int randomX = Random.Range(0, Constants.EndlessModeGridSizeX);
@@ -193,9 +177,28 @@ namespace WordBoggle
                     return nextCoord;
                 }
             }
-
             return Vector2Int.zero;
         }
+        
+        public void FillRemainingCellsRandomly(List<Cell> remaniningCells)
+        {
+            for (int i = 0; i < Constants.EndlessModeGridSizeX; i++)
+            {
+                for (int j = 0; j < Constants.EndlessModeGridSizeY; j++)
+                {
+                    var cell = GetCell(new Vector2Int(i, j));
+                    if (cell != null && remaniningCells.Contains(cell))
+                    {
+                        remaniningCells.Add(cell);
+                        var randomLetterIdx = Random.Range(0, 26);
+                        char randomLetter  = (char)('A' + randomLetterIdx);
+                        var gridTile = new GridTile {letter = randomLetter.ToString(), tileType = 0};
+                        cell.Initialise(gridTile, new Vector2Int(i, j));
+                    }
+                }
+            }
+        }
+        
         public void RemoveCells()
         {
             foreach (var cell in _cellsDictionary.Values)
@@ -205,7 +208,7 @@ namespace WordBoggle
             _cellsDictionary.Clear();
         }
 
-        public Cell  GetCell(Vector2Int cellCoord)
+        private Cell GetCell(Vector2Int cellCoord)
         {
             return GetCell(cellCoord.x, cellCoord.y);
         }
@@ -214,6 +217,7 @@ namespace WordBoggle
         {
             if(x >= 0 && y >= 0 && x < _gridSize.x && y < _gridSize.y)
                 return _cellsDictionary[new Vector2Int(x, y)];
+            
             return null;
         }
 

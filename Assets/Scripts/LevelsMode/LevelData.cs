@@ -4,6 +4,9 @@ using System.Collections.Generic;
 namespace WordBoggle
 {
 
+    /// <summary>
+    /// Class data created for deserializing the levels data json
+    /// </summary>
     [Serializable]
     public class LevelModeData
     {

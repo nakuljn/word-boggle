@@ -2,16 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 namespace WordBoggle
 {
+    //Controller for handling endless game mode logic. 
     public class EndlessModeController : MonoBehaviour
     {
         private List<string> _wordsList = new List<string>();
         private Grid _grid;
-        
 
         public void StartEndlessGame(Grid grid, HashSet<string> words)
         {
@@ -21,8 +20,7 @@ namespace WordBoggle
             grid.InitialiseEmptyCells(Constants.EndlessModeGridSizeX, Constants.EndlessModeGridSizeY);
             grid.InitialiseSpawnCells();
             
-            var cellsUsed = new List<Cell>();
-           // var cellsUsed = PlaceExistingWord();
+           var cellsUsed = PlaceExistingWord();
            var remainingCells = new List<Cell>();
            var allCells = grid.GetAllCells();
            foreach (var cell in allCells)
@@ -60,11 +58,6 @@ namespace WordBoggle
         {
             //Play anim
             yield return new WaitForSeconds(0.2f);
-        }
-
-        private void RestartAgain()
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
         
     }

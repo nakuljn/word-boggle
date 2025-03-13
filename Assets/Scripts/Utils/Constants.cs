@@ -3,7 +3,6 @@ public static class Constants
     public static class PlayerPrefsConstants
     {
         public const string GameMode = "GameMode";
-        public const string LevelType = "LevelType";
     }
     
     public static class SceneNames

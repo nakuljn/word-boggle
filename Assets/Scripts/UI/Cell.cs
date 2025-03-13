@@ -4,8 +4,14 @@ using UnityEngine;
 
 namespace WordBoggle
 {
+    /// <summary>
+    /// Holder for containing tiles. Grid consists of cells and cells holds each tile.
+    /// Cell here referes to grid cells.
+    /// </summary>
     public class Cell : MonoBehaviour
     {
+        #region Fields
+        
         [SerializeField] private LetterTile letterPrefab;
         
         private List<Cell> _neighbours;
@@ -13,10 +19,15 @@ namespace WordBoggle
         private LetterTile _letterTile;
         private Cell _bottomNeighbour;
         
+        #endregion
+
+        #region Unity Methods
         private void OnEnable()
         {
             _neighbours = new List<Cell>();
         }
+        #endregion
+
         public void Initialise(GridTile gridTile, Vector2Int cellCoordinates)
         {
             var letterTileObj = Instantiate(letterPrefab, transform);
@@ -42,7 +53,6 @@ namespace WordBoggle
         {
             return _bottomNeighbour;
         }
-     
         
         public LetterTile GetTile()
         {
@@ -84,6 +94,5 @@ namespace WordBoggle
 
             return TileType.Normal;
         }
-     
     }
 }

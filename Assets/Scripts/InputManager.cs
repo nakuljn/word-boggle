@@ -7,8 +7,17 @@ using System.Linq;
 
 namespace WordBoggle
 {
+    
+    /// <summary>
+    /// Central manager for receiving touch input to the grid.
+    /// Stores the tiles from where user clicks and drags to make a word
+    /// Send these tiles to the grid manager for processing 
+    /// </summary>
     public class InputManager : MonoBehaviour
     {
+        #region Fields
+
+        
         public event Action OnSelectionStart = null;
         public event Action<List<LetterTile>> OnSelectionComplete = null;
         [SerializeField] private GraphicRaycaster raycaster;
@@ -17,6 +26,10 @@ namespace WordBoggle
         private readonly string _tileLayerName = "Tile";
         private List<LetterTile> _selectedTiles = new List<LetterTile>(); 
         private bool _isDragging = false;
+
+        #endregion
+        
+        #region Unity Methods
 
         void Update()
         {
@@ -51,6 +64,8 @@ namespace WordBoggle
                 }
             }
         }
+        
+        #endregion
 
         private void OnBeginTouch(Vector2 position)
         {

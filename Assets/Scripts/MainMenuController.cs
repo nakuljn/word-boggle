@@ -9,6 +9,9 @@ using UnityEngine.UI;
 
 namespace WordBoggle
 {
+    /// <summary>
+    /// UI Viewer class responsible for the home scene interaction
+    /// </summary>
     public class MainMenuController : MonoBehaviour
     {
         #region Fields
@@ -23,7 +26,6 @@ namespace WordBoggle
         [SerializeField] private Button quitGameButton;
 
         private GameMode _gameMode = GameMode.Levels;
-        private LevelType _levelType;
 
         #endregion
 

@@ -8,8 +8,14 @@ using UnityEngine.UI;
 
 namespace WordBoggle
 {
+    /// <summary>
+    /// This class controls the level mode gameplay, It loads the level data and initialises the grid
+    /// initialises the level type based on the level data. Tells the grid manager about game end actions.
+    /// </summary>
     public class LevelsModeController : MonoBehaviour
     {
+        #region Fields
+        
         [SerializeField] private LevelManager levelManager;
         
         [Header("Top Panel")]
@@ -31,6 +37,7 @@ namespace WordBoggle
         private Action<bool> _onGameEnd;
         private bool _unlockButtonClicked = false;
 
+        #endregion
         #region Unity Methods
         private void OnEnable()
         {
@@ -45,10 +52,12 @@ namespace WordBoggle
             EnableUIElements();
         }
 
+        //For testing next level
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.D))
             {
+                _unlockButtonClicked = true;
                 LoadNextLevel();
             }
 
@@ -57,6 +66,7 @@ namespace WordBoggle
                 LoadPreviousLevel();
             }
         }
+        
         private void OnDisable()
         {
             unlockNextLevelButton.onClick.RemoveAllListeners();
@@ -66,23 +76,22 @@ namespace WordBoggle
         }
         
         #endregion
-
-  
+        
+        
+        #region Levels Setup
         public void StartGame(Grid grid, int currentLevel, Action<bool> onGameEnd)
         {
             _unlockButtonClicked = false;
+            unlockNextLevelButton.interactable = true;
             nextLevelButton.interactable = false;
             _levelType = LevelType.NoTimeLimit;
             _onGameEnd = onGameEnd;
-            levelTxt.text = currentLevel.ToString();
+            levelTxt.text = (currentLevel + 1).ToString();
             
-            if (PlayerPrefs.HasKey(Constants.PlayerPrefsConstants.LevelType))
-            {
-                var levelTypeString = PlayerPrefs.GetString(Constants.PlayerPrefsConstants.LevelType);
-                Enum.TryParse(levelTypeString, out LevelType levelType);
-                _levelType = levelType;
-            }
             var levelData = levelManager.LoadLevel(currentLevel);
+
+            SetLevelType(levelData);
+            
             _wordsTargetCount = levelData.wordCount;
             timerObj.gameObject.SetActive(_levelType != LevelType.NoTimeLimit);
 
@@ -91,10 +100,24 @@ namespace WordBoggle
             
             if (_levelType == LevelType.TimeLimitForWords)
             {
-                Debug.Log("Nakul : level datatime :  " + levelData.timeSec);
                 StartCoroutine(StartTimer(levelData.timeSec, levelData.totalScore));
             }
-           
+        }
+
+        private void SetLevelType(LevelData levelData)
+        {
+            if (levelData.timeSec > 0 && levelData.totalScore == 0)
+            {
+                _levelType = LevelType.TimeLimitForWords;
+            }
+            else if (levelData.timeSec > 0 && levelData.totalScore > 0)
+            {
+                _levelType = LevelType.TimeLimitForScore;
+            }
+            else
+            {
+                _levelType = LevelType.NoTimeLimit;
+            }
         }
 
         private void SetLevelTypeUI(int wordCount, int totalScore)
@@ -111,13 +134,17 @@ namespace WordBoggle
                 totalTarget.text = UIStrings.ScoreTarget + totalScore;
             }
         }
+        
+        #endregion
 
+        
+        #region Gameplay Functions
         private IEnumerator StartTimer(int totalTime, int scoreToReach)
         {
-            var elapsedTime = 0.0f;
-            while (elapsedTime < totalTime)
+            float elapsedTime = totalTime;
+            while (elapsedTime > 0)
             {
-                elapsedTime += Time.deltaTime;
+                elapsedTime -= Time.deltaTime;
                 timerTxt.text = elapsedTime.ToString("0.00");
                 yield return null;
             }
@@ -170,7 +197,7 @@ namespace WordBoggle
             if (_unlockButtonClicked)
             {
                 var playerData = PlayerDataService.Instance.LoadPlayerData();
-                int prevLevel = playerData.LevelsGameData.currentLevel - 1;
+                int prevLevel = playerData.LevelsGameData.currentLevel + 1;
                 PlayerDataService.Instance.SetPlayerLevel(prevLevel);
             }
             
@@ -192,6 +219,7 @@ namespace WordBoggle
         private void UnlockNextLevel()
         {
             nextLevelButton.interactable = true;
+            unlockNextLevelButton.interactable = false;
         }
         private void EnableUIElements()
         {
@@ -213,5 +241,7 @@ namespace WordBoggle
             levelTxt.gameObject.SetActive(false);
 
         }
+        
+        #endregion
     }
 }

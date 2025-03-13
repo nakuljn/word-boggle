@@ -21,6 +21,10 @@ namespace WordBoggle
         TimeLimitForScore
     }
     
+    /// <summary>
+    /// Central class for handling game flow. sets up the game mode,
+    /// processes user input and handles game win/lose actions, 
+    /// </summary>
     public class GameManager : MonoBehaviour
     {
         #region Singleton
@@ -144,7 +148,6 @@ namespace WordBoggle
                     textFile.text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
                         .Select(word => word.Trim())
                 );
-                Debug.Log("Words Loaded : " + _wordSet.Count);
             }
             else
             {
@@ -172,12 +175,10 @@ namespace WordBoggle
         {
             if (tilesMatched.Count == 0)
             {
-                Debug.Log("Word is empty");
                 return;
             }
             if (tilesMatched.Count < 3)
             {
-                Debug.Log("Word is too short");
                 ShowErrorMessage(UIStrings.WordTooShort);
                 return;
             }
@@ -195,11 +196,9 @@ namespace WordBoggle
             word = word.ToLower();
             if (!_wordSet.Contains(word))
             {
-                Debug.Log("Word not found in word list");
                 ShowErrorMessage(UIStrings.WordNotFound);
                 return;
             }
-            
             _currentScore += score;
             _currentWords++;
             
@@ -282,11 +281,6 @@ namespace WordBoggle
             {   
                 LoadNextLevel();
             }
-        }
-
-        public Cell GetCell(Vector2Int coordinates)
-        {
-            return grid.GetCell(coordinates);
         }
         
         private void LoadNextLevel()

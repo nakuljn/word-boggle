@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace  WordBoggle
 {
+    /// <summary>
+    /// A singleton used for saving/loading player data from persistent data path
+    /// </summary>
     public class PlayerDataService : MonoBehaviour
     {
         #region Singleton
@@ -23,10 +26,12 @@ namespace  WordBoggle
         private string _filePath;
         private PlayerData _playerData;
 
+        #region Unity Methods
         private void Start()
         {
             _filePath = Application.persistentDataPath + "/playerData.json";
         }
+        #endregion
         public void CreatePlayerData(string playerName)
         {
             _playerData = new PlayerData

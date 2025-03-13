@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TMPro;
-using TreeEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,10 +12,16 @@ namespace WordBoggle
         Blocker
     }
     
-   
 
+    /// <summary>
+    /// UI class for holding letter tile data and their tile types.
+    /// Generates the scores based on the below score dictionary and tile type
+    /// The update method checks if any tile below it is destroyed and cascades below
+    /// only in case of endless game mode
+    /// </summary>
     public class LetterTile : MonoBehaviour
     { 
+        #region Fields
         private static readonly Dictionary<char, int> letterScores = new Dictionary<char, int>
         
         { { 'A', 1 }, { 'B', 3 }, { 'C', 3 }, { 'D', 2 }, { 'E', 1 },
@@ -42,6 +47,8 @@ namespace WordBoggle
         private GridLayoutGroup _gridLayoutGroup;
         private float _yPosDelta = 215f;
 
+        #endregion
+        
         #region Unity Methods
         
         private void OnEnable()
@@ -66,14 +73,18 @@ namespace WordBoggle
                     {
                         return;
                     }
+                    //Checks if tile is not moving, if not than starts ito move
                     if (!_isMoving)
                     {
+                        //Turned off the grid layout group since it disturbs the tile movement
                         GameManager.Instance.ToggleGridLayoutGroup(false);
                         _isMoving = true;
                     }
                     var endPos = new Vector2(0, _cell.transform.localPosition.y - _yPosDelta);
                     tile.transform.localPosition = Vector2.MoveTowards(transform.localPosition, endPos, Time.deltaTime*700);
                     float distance = Mathf.Abs(tile.transform.localPosition.y - endPos.y);
+                    
+                    //If the distance between this tile and below cell is less than change this tile cell to below cell
                     if (distance < 1f)
                     {
                         var currentTile = _cell.GetTile();
@@ -166,7 +177,7 @@ namespace WordBoggle
         {
             if (letterString.Length == 0) return 0;
             var letter = letterString[0];
-            letter = char.ToUpper(letter); // Ensure uppercase for consistency
+            letter = char.ToUpper(letter); 
             return letterScores.ContainsKey(letter) ? letterScores[letter] : 0;
         }
 
