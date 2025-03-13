@@ -34,8 +34,7 @@ namespace WordBoggle
             letterTileObj.name = "Letter " + gridTile.letter;
             letterTileObj.gameObject.SetActive(true);
             _letterTile = letterTileObj;
-            TileType tileType = GetTileType(gridTile.tileType);
-            _letterTile.Initialise(tileType, gridTile.letter, this);
+            _letterTile.Initialise(gridTile, this);
             SetCellCoordinates(cellCoordinates);
         }
 
@@ -83,16 +82,6 @@ namespace WordBoggle
             return _neighbours.Contains(cell);
         }
 
-        private TileType GetTileType(int tileNumber)
-        {
-            if (tileNumber == 0 || tileNumber == 1)
-                return TileType.Normal;
-            if (tileNumber == 2)
-                return TileType.Bonus;
-            if (tileNumber >= 3 && tileNumber <= 6)
-                return TileType.Blocker;
-
-            return TileType.Normal;
-        }
+      
     }
 }

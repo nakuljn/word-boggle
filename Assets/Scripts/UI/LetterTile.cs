@@ -42,7 +42,8 @@ namespace WordBoggle
         private bool _isMoving = false;
         private TileType _tileType = TileType.Normal;
         private Cell  _cell;
-        
+
+        private int _blockerStage = 0;
         private string _letter;
         private GridLayoutGroup _gridLayoutGroup;
         private float _yPosDelta = 215f;
@@ -107,27 +108,43 @@ namespace WordBoggle
         }
         #endregion
 
-        public void Initialise(TileType tileType, string letter, Cell  cell)
+        public void Initialise(GridTile gridTile,  Cell  cell)
         {
-            _letter = letter;
+            _letter = gridTile.letter;
             letterTxt.text = _letter;
-            _tileType = tileType;
-            if (letter.Length > 0)
+            _tileType = GetTileType(gridTile.tileType);
+            if (_tileType == TileType.Blocker)
             {
-                var tileScore = GetScore(letter);
+                _blockerStage = gridTile.tileType - 2;
+            }
+            if (_letter.Length > 0)
+            {
+                var tileScore = GetScore(_letter);
                 scoreTxt.text = tileScore.ToString();
             }
-            if (tileType == TileType.Bonus)
+            if (_tileType == TileType.Bonus)
             {
                 bonusTile.SetActive(true);
             }
 
-            if (tileType == TileType.Blocker)
+            if (_tileType == TileType.Blocker)
             {
                 blockerTile.SetActive(true);
             }
             
             _cell = cell;
+        }
+        
+        private TileType GetTileType(int tileNumber)
+        {
+            if (tileNumber == 0 || tileNumber == 1)
+                return TileType.Normal;
+            if (tileNumber == 2)
+                return TileType.Bonus;
+            if (tileNumber >= 3 && tileNumber <= 6)
+                return TileType.Blocker;
+
+            return TileType.Normal;
         }
 
         public string GetLetterString()
@@ -181,5 +198,17 @@ namespace WordBoggle
             return letterScores.ContainsKey(letter) ? letterScores[letter] : 0;
         }
 
+        public void SendMatchEvent()
+        {
+            if (_tileType == TileType.Blocker)
+            {
+                _blockerStage--;
+                if (_blockerStage == 0)
+                {
+                    blockerTile.SetActive(false);
+                    _tileType = TileType.Normal;
+                }
+            }
+        }
     }
 }

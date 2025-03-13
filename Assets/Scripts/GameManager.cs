@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using WordBoggle.Utils;
 
 namespace WordBoggle
 {
@@ -99,6 +100,8 @@ namespace WordBoggle
 
         void Start()
         {
+            _currentScore = 0;
+            _currentWords = 0;
             _wordSet = new HashSet<string>();
             GameMode = GameMode.Endless;
             gameWinObject.SetActive(false);
@@ -212,14 +215,30 @@ namespace WordBoggle
                     levelsModeController.UpdateScore(_currentScore, _currentWords);
                     break;
             }
+
+            foreach (var letterTile in tilesMatched)
+            {
+                List<Direction> directions = new List<Direction>() { Direction.Up , Direction.Left , Direction.Right , Direction.Down };
+                foreach (var direction in directions)
+                {
+                    var offset = DirectionHelper.GetOffsetFromDirection(direction);
+                    var neighbourCellCoord = letterTile.GetCell().GetCellCoordinates() + offset;
+                    var neighbourCell = grid.GetCell(neighbourCellCoord);
+                    if (neighbourCell != null && neighbourCell.GetTile() != null)
+                    {
+                        neighbourCell.GetTile().SendMatchEvent();
+                    }
+                }
+                
+            }
         }
 
         private void DisplayScores()
         {
             var avgScore = _currentScore / _currentWords;
 
-            totalScore.text = "Total Score : " + _currentScore.ToString();
-            averageScore.text = "Average Score: " + avgScore.ToString();
+            totalScore.text = UIStrings.TotalScore + _currentScore;
+            averageScore.text = UIStrings.AverageScore + avgScore;
         }
 
         private void ShowErrorMessage(string message)
@@ -285,7 +304,6 @@ namespace WordBoggle
         
         private void LoadNextLevel()
         { 
-            grid.RemoveCells();
             levelsModeController.EnableNextLevelButton();
         }
 

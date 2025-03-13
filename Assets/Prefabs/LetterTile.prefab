@@ -766,7 +766,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 200}
+  m_SizeDelta: {x: 180, y: 180}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7693545587948083988
 CanvasRenderer:
@@ -793,6 +793,7 @@ MonoBehaviour:
   blockerTile: {fileID: 990310521115680242}
   scoreTxt: {fileID: 5763364115118840543}
   tileHighlighter: {fileID: 1132608562468450682}
+  CanBeSelected: 1
 --- !u!1 &7145084856907364109
 GameObject:
   m_ObjectHideFlags: 0

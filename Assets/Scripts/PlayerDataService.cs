@@ -37,7 +37,7 @@ namespace  WordBoggle
             _playerData = new PlayerData
             {
                 playerId = Guid.NewGuid().ToString(), 
-                playerName = "Player", 
+                playerName = playerName, 
                 endlessGameData = new PlayerEndlessGameData(),
                 LevelsGameData = new PlayerLevelsGameData()
             };
@@ -54,7 +54,6 @@ namespace  WordBoggle
             
             string json = File.ReadAllText(_filePath);
             _playerData = JsonUtility.FromJson<PlayerData>(json);
-            Debug.Log("Player Data Loaded: " + json);
             
             return _playerData;
         }
@@ -68,7 +67,6 @@ namespace  WordBoggle
         {
             string json = JsonUtility.ToJson(playerData, true);
             File.WriteAllText(_filePath, json);
-            Debug.Log("Player Data Saved: " + json);
         }
         
         public void IncreaseLevelByOne()

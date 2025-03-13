@@ -18,8 +18,13 @@ namespace WordBoggle
         [SerializeField] private Cell cellPrefab;
         [SerializeField] private SpawnCell spawnCellPrefab;
         [SerializeField] private Transform cellParent;
+        
         [SerializeField] private GridLayoutGroup gridLayoutGroup;
         [SerializeField] private Transform spawnCellsParent;
+
+        [SerializeField] private RectTransform gridHolder;
+        [SerializeField] private RectTransform spawnHolder;
+     
         private Dictionary<Vector2Int, Cell> _cellsDictionary;
         private Vector2Int _gridSize;
 
@@ -56,6 +61,7 @@ namespace WordBoggle
                     _cellsDictionary[cellCoord] = cell;
                 }
             }
+            AdjustGridSize();
             IdentifyNeighbours();
         }
 
@@ -64,7 +70,7 @@ namespace WordBoggle
             foreach (var cellMap in _cellsDictionary)
             {
                 var cell = cellMap.Value;
-                Destroy(cell.gameObject);
+                if(cell != null) Destroy(cell.gameObject);
             }
             _cellsDictionary.Clear();
         }
@@ -85,10 +91,26 @@ namespace WordBoggle
                     _cellsDictionary[coord] = cell;
                 }
             }
-            
+
+            AdjustGridSize();
             IdentifyNeighbours();
         }
 
+        private void AdjustGridSize()
+        {
+            var columns = _gridSize.y;
+            var rows = _gridSize.x;
+            var cellSize = gridLayoutGroup.cellSize.x;
+            var spacing = gridLayoutGroup.spacing.x;
+            
+            var gridWidth = (columns * cellSize) + ((columns - 1) * spacing);
+            var gridHeight = (rows * cellSize) + ((rows - 1) * spacing);
+            
+            gridHolder.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, gridWidth);
+            gridHolder.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, gridHeight);
+            
+            spawnHolder.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, gridWidth);
+        }
         private void IdentifyNeighbours()
         {
             var cells = _cellsDictionary.Values.ToList();
@@ -199,16 +221,7 @@ namespace WordBoggle
             }
         }
         
-        public void RemoveCells()
-        {
-            foreach (var cell in _cellsDictionary.Values)
-            {
-                Destroy(cell.gameObject);
-            }
-            _cellsDictionary.Clear();
-        }
-
-        private Cell GetCell(Vector2Int cellCoord)
+        public Cell GetCell(Vector2Int cellCoord)
         {
             return GetCell(cellCoord.x, cellCoord.y);
         }

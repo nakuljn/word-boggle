@@ -25,13 +25,15 @@ namespace WordBoggle
         
         public LevelData LoadLevel(int levelNumber)
         {
-            if(levelNumber <= 0) levelNumber = 0;
-            if (levelNumber >= _levelData.data.Count)
+            int levelIdx = 0;
+            levelIdx = levelNumber - 1;
+            if (levelIdx < 0) return null;
+            if (levelIdx >= _levelData.data.Count)
             {
                 Debug.LogWarning("Level number is out of range.");
                 return null;
             }
-            return _levelData.data[levelNumber];
+            return _levelData.data[levelIdx];
         }
         
     }

@@ -24,4 +24,6 @@ public static class UIStrings
     public const string CurrentWords = "Current words count ";
     public const string ScoreTarget = "Total score to reach ";
     public const string CurrentScore = "Current Score ";
+    public const string TotalScore = "Total Score ";
+    public const string AverageScore = "Average Score ";
 }

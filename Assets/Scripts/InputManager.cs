@@ -73,7 +73,6 @@ namespace WordBoggle
             _selectedTiles.Clear();
             if (objTouched != null && LayerMask.LayerToName(objTouched.layer) == _tileLayerName)
             {
-                Debug.Log(objTouched.name);
                 _isDragging = true;
                 LetterTile tile = objTouched.GetComponentInParent<LetterTile>();
                 if (tile != null && tile.CanBeSelected)

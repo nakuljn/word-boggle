@@ -52,6 +52,11 @@ namespace WordBoggle
             EnableUIElements();
         }
 
+        private void Start()
+        {
+            _currentScore = 0;
+            _currentWordCount = 0;
+        }
         //For testing next level
         private void Update()
         {
@@ -84,18 +89,18 @@ namespace WordBoggle
             _unlockButtonClicked = false;
             unlockNextLevelButton.interactable = true;
             nextLevelButton.interactable = false;
+            prevLevelButton.interactable = true;
             _levelType = LevelType.NoTimeLimit;
             _onGameEnd = onGameEnd;
-            levelTxt.text = (currentLevel + 1).ToString();
+            levelTxt.text = currentLevel.ToString();
             
             var levelData = levelManager.LoadLevel(currentLevel);
 
             SetLevelType(levelData);
+            timerObj.gameObject.SetActive(_levelType != LevelType.NoTimeLimit);
+            grid.Initialise(levelData);
             
             _wordsTargetCount = levelData.wordCount;
-            timerObj.gameObject.SetActive(_levelType != LevelType.NoTimeLimit);
-
-            grid.Initialise(levelData);
             SetLevelTypeUI(levelData.wordCount, levelData.totalScore);
             
             if (_levelType == LevelType.TimeLimitForWords)
@@ -149,7 +154,7 @@ namespace WordBoggle
                 yield return null;
             }
 
-            if (_levelType == LevelType.TimeLimitForWords &&_currentWordCount >= _wordsTargetCount)
+            if (_levelType == LevelType.TimeLimitForWords && _currentWordCount >= _wordsTargetCount)
                 _onGameEnd?.Invoke(true);
             else
                 _onGameEnd?.Invoke(false);
@@ -166,18 +171,17 @@ namespace WordBoggle
         }
         public void UpdateScore(int currentScore, int wordsFormed)
         {
-            _currentScore += currentScore;
-            totalTarget.text += _currentScore.ToString();
-            _currentWordCount++;
             
-            if (_levelType == LevelType.TimeLimitForWords || _levelType == LevelType.TimeLimitForScore)
+            _currentScore = currentScore;
+            _currentWordCount = wordsFormed;
+            if (_levelType == LevelType.NoTimeLimit || _levelType == LevelType.TimeLimitForWords)
             {
                 currentTarget.text = UIStrings.CurrentWords + _currentWordCount;
             }
 
             if (_levelType == LevelType.TimeLimitForScore)
             {
-                currentTarget.text = UIStrings.CurrentScore + _currentScore;
+                totalTarget.text = UIStrings.WordsTarget + _currentScore;
             }
             
             if (_levelType == LevelType.NoTimeLimit && _currentWordCount >= _wordsTargetCount)
@@ -229,6 +233,7 @@ namespace WordBoggle
             nextLevelButton.gameObject.SetActive(true);
             prevLevelButton.gameObject.SetActive(true);
             levelTxt.gameObject.SetActive(true);
+            unlockNextLevelButton.gameObject.SetActive(true);
         }
         
         private void DisableUIElements()
@@ -239,7 +244,7 @@ namespace WordBoggle
             prevLevelButton.gameObject.SetActive(false);
             nextLevelButton.gameObject.SetActive(false);
             levelTxt.gameObject.SetActive(false);
-
+            unlockNextLevelButton.gameObject.SetActive(false);
         }
         
         #endregion
