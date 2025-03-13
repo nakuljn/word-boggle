@@ -23,16 +23,20 @@ namespace WordBoggle
         [SerializeField] private GraphicRaycaster raycaster;
         [SerializeField] private EventSystem eventSystem;
         
+        public bool BlockInput = false;
         private readonly string _tileLayerName = "Tile";
         private List<LetterTile> _selectedTiles = new List<LetterTile>(); 
         private bool _isDragging = false;
 
+        
         #endregion
         
         #region Unity Methods
 
         void Update()
         {
+            if (BlockInput) return;
+            
             if (Input.GetMouseButtonDown(0))
             {
                 OnBeginTouch(Input.mousePosition);

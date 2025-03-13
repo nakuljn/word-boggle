@@ -72,7 +72,7 @@ namespace WordBoggle
         public GameMode GameMode { get; private set; } = GameMode.Endless;
         
         private HashSet<string> _wordSet;
-
+        private HashSet<string> _wordsFound;
         private int _currentScore = 0;
         private int _currentWords = 0;
         
@@ -123,6 +123,7 @@ namespace WordBoggle
         
         private void SetupGameData()
         {
+            _wordsFound = new HashSet<string>();
             if (PlayerPrefs.HasKey(Constants.PlayerPrefsConstants.GameMode))
             {
                 var gameModeString = PlayerPrefs.GetString(Constants.PlayerPrefsConstants.GameMode);
@@ -167,6 +168,9 @@ namespace WordBoggle
 
         public void StartLevelsGame()
         {
+            inputManager.BlockInput = false;
+            _wordsFound.Clear();
+            
             var playerData = PlayerDataService.Instance.LoadPlayerData();
             endlessModeController.gameObject.SetActive(false);
             levelsModeController.gameObject.SetActive(true);
@@ -185,13 +189,24 @@ namespace WordBoggle
                 ShowErrorMessage(UIStrings.WordTooShort);
                 return;
             }
-            
+          
             string word = "";
             int score = 0;
             foreach (var letterTile in tilesMatched)
             {
                 word += letterTile.GetLetterString();
                 score += letterTile.GetLetterScore();
+            }
+            
+            if (_wordsFound.Contains(word))
+            {
+                ShowErrorMessage(UIStrings.WordAlreadyFound);
+                return;
+            }
+            
+            if (GameMode == GameMode.Levels)
+            {
+                _wordsFound.Add(word);
             }
             
             displayWord.text = word;
@@ -206,6 +221,8 @@ namespace WordBoggle
             _currentWords++;
             
             DisplayScores();
+            SendMatchEventsToNeighbourCells(tilesMatched);
+            
             switch (GameMode)
             {
                 case GameMode.Endless:
@@ -216,6 +233,11 @@ namespace WordBoggle
                     break;
             }
 
+           
+        }
+
+        private void SendMatchEventsToNeighbourCells(List<LetterTile> tilesMatched)
+        {
             foreach (var letterTile in tilesMatched)
             {
                 List<Direction> directions = new List<Direction>() { Direction.Up , Direction.Left , Direction.Right , Direction.Down };
@@ -277,6 +299,7 @@ namespace WordBoggle
         {
             if (isWin)
             {
+                inputManager.BlockInput = true;
                 StartCoroutine(GameWinRoutine());
             }
             else
@@ -293,8 +316,6 @@ namespace WordBoggle
             PlayerDataService.Instance.UpdatePlayerScore(endLevelScore);
             
             gameWinObject.SetActive(true);
-            yield return new WaitForSeconds(2f);
-            gameWinObject.SetActive(false);
 
             if (GameMode == GameMode.Levels)
             {   

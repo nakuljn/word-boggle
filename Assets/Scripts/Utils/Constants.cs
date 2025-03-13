@@ -18,8 +18,12 @@ public static class Constants
 
 public static class UIStrings
 {
+    //Error messages
     public static string WordNotFound = "Word was not found";
     public static string WordTooShort = "Word is too short";
+    public static string WordAlreadyFound = "Word already found";
+    
+    //Display messages
     public const string WordsTarget = "Total words to find ";
     public const string CurrentWords = "Current words count ";
     public const string ScoreTarget = "Total score to reach ";
